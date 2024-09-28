@@ -12,6 +12,10 @@ ArrayWidget::ArrayWidget(void (*logger)(QString &&), QWidget *parent, int size,
   if (!isRandom) {
     shuffle();
   }
+  resetStatistics();
+  // 计时器初始化
+  timer = new QTimer;
+  connect(timer, &QTimer::timeout, [this]() { processTime++; });
 }
 
 // 析构数组组件
@@ -81,21 +85,36 @@ void ArrayWidget::paintEvent(QPaintEvent *event) {
     // 绘制此数
     p.drawRect(nRect);
   }
+
   // 绘制信息
   p.setPen(Qt::white);
   p.setBrush(Qt::NoBrush);
-
   p.setFont(QFont(font().family()));
+  // 当前算法
   p.drawText(6, 12, "current algorithm:" + currentAg);
-  p.drawText(6, 26, "comparisons:" + QString::number(compareTimes));
-  p.drawText(6, 40, "swaps:" + QString::number(swapTimes));
-  p.drawText(5, 54,
+  // 次数信息
+  p.drawText(6, 34, "comparisons:" + QString::number(compareTimes));
+  p.drawText(6, 48, "swaps:" + QString::number(swapTimes));
+  // 时间信息
+  p.drawText(6, 70,
              "sort time:" + QString::number(sortTime / 1000 / 1000) + "ms");
+  p.drawText(6, 84, "process time:" + QString::number(processTime) + "s");
+  // 内存信息
+  p.drawText(6, 106,
+             "extra memory use:" + QString::number(memoryUse) + " byte\t" +
+                 "max extra memory use:" + QString::number(maxMemoryUse) +
+                 " byte");
+  // 栈信息
+  p.drawText(6, 128,
+             "stack depth:" + QString::number(stackDepth) +
+                 "\tmax stack depth:" + QString::number(maxStackDepth));
 }
 
 // 交换数据平均96ns
 void ArrayWidget::swapData(int i, int j) {
 
+  stackDeeper();
+  memoryChange(4);
   int tempi = array[i];
   array[i] = array[j];
   array[j] = tempi;
@@ -112,29 +131,36 @@ void ArrayWidget::swapData(int i, int j) {
   sortTime += 96;
   // 延迟重绘
   delay();
-  parentWidget()->repaint();
+  memoryChange(-4);
+  stackShallower();
   // 记录结束
 }
 
 // 洗牌
 void ArrayWidget::shuffle() {
+  stackDeeper();
   currentAg = "shuffling...";
   // 以1ms动画延时打乱数组
   int temp = animDelay;
   animDelay = 1;
   // Fisher-Yates 洗牌算法
   // 从数组的最后一个元素开始
+  memoryChange(4);
   for (int i = arraySize - 1; i > 0; --i) {
     // 生成 [0, i] 范围内的随机索引
+    memoryChange(4);
     int j = rand() % (i + 1);
 
     // 交换 arr[i] 和 arr[j]
     swapData(i, j);
     delay();
+    memoryChange(-4);
   }
+  memoryChange(-4);
   animDelay = temp;
   currentAg = "";
   parentWidget()->repaint();
+  stackShallower();
 }
 
 void ArrayWidget::setRandom() {
@@ -165,33 +191,112 @@ void ArrayWidget::setAnimeDelay(int milliseconds) { animDelay = milliseconds; }
 
 // 冒泡排序
 void ArrayWidget::bubbleSort() {
-
   // 设置当前算法标题
   currentAg = "<Bubble Sort>";
-
+  // 栈深度++
+  stackDeeper();
+  // 申请4字节
+  memoryChange(+4);
   for (int i = 0; i < arraySize; i++) {
+    // 不可避免的比较(循环内比较)
     inevitableComparison();
+    // 申请4字节内存
+    memoryChange(+4);
     for (int j = 0; j < arraySize - i - 1; j++) {
+      // 不可避免的比较(循环内比较)
       inevitableComparison();
       if (compare(j, j + 1) == 1) {
         swapData(j, j + 1);
       }
     }
+    // 释放了4字节
+    memoryChange(-4);
   }
+  // 释放了4字节
+  memoryChange(-4);
+  // 栈深度--
+  stackShallower();
 }
 // 插入排序
-void ArrayWidget::insertionSort() {}
+void ArrayWidget::insertionSort() {
+  currentAg = "Insertion Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
 
 // 选择排序
-void ArrayWidget::selectSort() {}
+void ArrayWidget::selectSort() {
+  currentAg = "Select Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 归并排序
+void ArrayWidget::mergeSort(int from, int to) {
+  currentAg = "Merge Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 桶排序
+void ArrayWidget::bucketSort() {
+  currentAg = "Bucket Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 计数排序
+void ArrayWidget::countingSort() {
+  currentAg = "Counting Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 基数排序
+void ArrayWidget::radixSort() {
+  currentAg = "Radix Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
 
 // 快速排序
-void ArrayWidget::quickSort(int from, int to) {}
+void ArrayWidget::quickSort(int from, int to) {
+  currentAg = "Quick Sort";
+  logInfo("<font color='red'>fuck you</font>");
+  int pivot = array[from];
+  while (from < to) {
+    // while () {
+    // }
+  }
+}
+
+// 希尔排序
+void ArrayWidget::shellSort() {
+  currentAg = "Shell Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 堆排序(大顶堆)
+void ArrayWidget::maxHeapSort(int from, int to) {
+  currentAg = "Heap Sort(max)";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 堆排序(小顶堆)
+void ArrayWidget::minHeapSort(int from, int to) {
+  currentAg = "Heap Sort(min)";
+  logInfo("<font color='red'>fuck you</font>");
+}
+
+// 梳排序
+void ArrayWidget::combSort() {
+  currentAg = "Comb Sort";
+  logInfo("<font color='red'>fuck you</font>");
+}
 
 void ArrayWidget::delay() {
+  // 判断是否跳过延迟
+  if (skipFlag)
+    return;
+
   QEventLoop loop;
   QTimer::singleShot(animDelay, &loop, &QEventLoop::quit);
   loop.exec(); // 进入局部事件循环，等待定时器超时
+  parentWidget()->repaint();
 }
 
 int ArrayWidget::compare(int i, int j) {
@@ -199,7 +304,6 @@ int ArrayWidget::compare(int i, int j) {
   checkPair.first = i;
   checkPair.second = j;
   delay();
-  parentWidget()->repaint();
   inevitableComparison();
   return array[i] > array[j] ? 1 : (array[i] == array[j] ? 0 : -1);
 }
@@ -211,10 +315,45 @@ void ArrayWidget::inevitableComparison() {
   // 记录结束
 }
 
+void ArrayWidget::stackDeeper() {
+  stackDepth++;
+  if (stackDepth > maxStackDepth)
+    maxStackDepth = stackDepth;
+  parentWidget()->repaint();
+}
+
+void ArrayWidget::stackShallower() {
+  if (stackDepth > 0) {
+    stackDepth--;
+    parentWidget()->repaint();
+  }
+}
+
+void ArrayWidget::memoryChange(int dMemory) {
+  if (dMemory < 0) {
+    if (memoryUse > 0) {
+      memoryUse += dMemory;
+    }
+  } else {
+    memoryUse += dMemory;
+  }
+  if (maxMemoryUse < memoryUse)
+    maxMemoryUse = memoryUse;
+  parentWidget()->repaint();
+}
+
 void ArrayWidget::resetStatistics() {
   compareTimes = 0;
   sortTime = 0.0;
   swapTimes = 0;
+  processTime = 0;
+  memoryUse = 0.0;
+  maxMemoryUse = 0.0;
+  stackDepth = 0;
+  maxStackDepth = 0;
+  repaint();
 }
+
+void ArrayWidget::startTimer() { timer->start(1000); }
 
 #include "moc_ArrayWidget.cpp"

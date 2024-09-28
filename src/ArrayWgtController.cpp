@@ -79,7 +79,10 @@ ArrayWgtController::ArrayWgtController() : QWidget(nullptr) {
   sortMethodInfo = new QLabel("sort Method:");
   sortMethodEdit = new QComboBox;
 
-  sortMethodEdit->addItems({"Bubble Sort"});
+  sortMethodEdit->addItems(
+      {"Bubble Sort", "Insertion Sort", "Select Sort", "Merge Sort",
+       "Bucket Sort", "Counting Sort", "Radix Sort", "QuickSort", "Shell Sort",
+       "Heap Sort(max heap)", "Heap Sort(min heap)", "Comb Sort"});
   sortMethodEdit->setCurrentIndex(0);
 
   topLayout->addWidget(sortMethodInfo);
@@ -103,6 +106,12 @@ ArrayWgtController::ArrayWgtController() : QWidget(nullptr) {
   connect(sortButton, &QPushButton::clicked, this,
           &ArrayWgtController::startSort);
   topLayout->addWidget(sortButton);
+
+  skipButton = new QPushButton("skip");
+  skipButton->setCheckable(true);
+  connect(skipButton, &QPushButton::clicked,
+          [this](bool flag) { arrayWidget->skipFlag = flag; });
+  topLayout->addWidget(skipButton);
 
   shuffleButton = new QPushButton("shuffle");
   connect(shuffleButton, &QPushButton::clicked, this,
@@ -218,11 +227,81 @@ void ArrayWgtController::applySettings() {
 }
 // 开始排序
 void ArrayWgtController::startSort() {
+  // 重置统计信息
+  arrayWidget->resetStatistics();
+  // 开始程序计时器
+  arrayWidget->startTimer();
   switch (sortMethodEdit->currentIndex()) {
   case 0: {
-    arrayWidget->resetStatistics();
+    // 开始排序
     arrayWidget->bubbleSort();
-    info("</font color='pink'>current using: bubble sort</font>");
+    info("</font color='pink'>bubble sort done.</font>");
+    break;
+  }
+  case 1: {
+    // 插入排序
+    arrayWidget->insertionSort();
+    info("</font color='pink'>insertion sort done.</font>");
+    break;
+  }
+  case 2: {
+    // 选择排序
+    arrayWidget->selectSort();
+    info("<fonr color='pink'>select sort done.</font>");
+    break;
+  }
+  case 3: {
+    // 归并排序
+    arrayWidget->mergeSort(0, arrayWidget->arraySize - 1);
+    info("<fonr color='pink'>merge sort done.</font>");
+    break;
+  }
+  case 4: {
+    // 桶排序
+    arrayWidget->bucketSort();
+    info("<fonr color='pink'>bucket sort done.</font>");
+    break;
+  }
+  case 5: {
+    // 计数排序
+    arrayWidget->countingSort();
+    info("<fonr color='pink'>couting sort done.</font>");
+    break;
+  }
+  case 6: {
+    // 基数排序
+    arrayWidget->radixSort();
+    info("<fonr color='pink'>radix sort done.</font>");
+    break;
+  }
+  case 7: {
+    // 快速排序
+    arrayWidget->quickSort(0, arrayWidget->arraySize - 1);
+    info("<fonr color='pink'>quick sort done.</font>");
+    break;
+  }
+  case 8: {
+    // 希尔排序
+    arrayWidget->shellSort();
+    info("<fonr color='pink'>shell sort done.</font>");
+    break;
+  }
+  case 9: {
+    // 堆排序(大)
+    arrayWidget->maxHeapSort(0, arrayWidget->arraySize - 1);
+    info("<fonr color='pink'>max heap sort done.</font>");
+    break;
+  }
+  case 10: {
+    // 堆排序(小)
+    arrayWidget->minHeapSort(0, arrayWidget->arraySize - 1);
+    info("<fonr color='pink'>min heap sort done.</font>");
+    break;
+  }
+  case 11: {
+    // 梳排序
+    arrayWidget->combSort();
+    info("<fonr color='pink'>comb sort done.</font>");
     break;
   }
   }

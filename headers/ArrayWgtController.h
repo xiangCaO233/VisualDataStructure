@@ -66,6 +66,7 @@ class ArrayWgtController : public QWidget {
 
   // 开始排序
   QPushButton *sortButton;
+  QPushButton *skipButton;
   // 打乱数组
   QPushButton *shuffleButton;
 

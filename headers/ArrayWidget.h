@@ -86,7 +86,7 @@ class ArrayWidget : public QWidget {
   int arraySize;
 
   // 动画延迟(ms)
-  int animDelay{3};
+  int animDelay{5};
 
   // 理论排序耗时
   double sortTime = 0;
@@ -127,6 +127,11 @@ class ArrayWidget : public QWidget {
   // 日志函数指针(使用logInfo(string);来在日志框打印日志)
   void (*logInfo)(QString &&);
 
+  // 计时timer
+  QTimer *timer;
+
+  bool skipFlag{false};
+
   // 生成数据
   void generateData();
 
@@ -145,8 +150,32 @@ class ArrayWidget : public QWidget {
   // 选择排序
   void selectSort();
 
+  // 归并排序
+  void mergeSort(int from, int to);
+
+  // 桶排序
+  void bucketSort();
+
+  // 计数排序
+  void countingSort();
+
+  // 基数排序
+  void radixSort();
+
   // 快速排序
   void quickSort(int from, int to);
+
+  // 希尔排序
+  void shellSort();
+
+  // 堆排序(大顶堆from为堆的根结点)
+  void maxHeapSort(int from, int to);
+
+  // 堆排序(小顶堆to为根结点)
+  void minHeapSort(int from, int to);
+
+  // 梳排序
+  void combSort();
 
   // 进行一次标记比较
   // (array[i]大于array[j] 返回1，相等返回0，小于返回-1)
@@ -155,6 +184,15 @@ class ArrayWidget : public QWidget {
 
   // 不可避免的比较，如循环的内部判断，也需要算在算法时间内
   void inevitableComparison();
+
+  // 栈更深了(++)
+  void stackDeeper();
+
+  // 栈更浅了(--)
+  void stackShallower();
+
+  // 内存变化(传入正负以代表变化)
+  void memoryChange(int dMemory);
 
   friend ArrayWgtController;
 
@@ -179,6 +217,9 @@ public:
 
   // 重置统计信息
   void resetStatistics();
+
+  // 开始计时
+  void startTimer();
 
 protected:
   // 绘制数组
