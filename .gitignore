@@ -4,6 +4,7 @@
 /.cache
 /.qt
 /DataStructure_autogen
+/build
 
 # 忽略文件
 CMakeCache.txt

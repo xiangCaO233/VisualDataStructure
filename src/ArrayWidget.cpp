@@ -219,25 +219,150 @@ void ArrayWidget::bubbleSort() {
 }
 // 插入排序
 void ArrayWidget::insertionSort() {
+  stackDeeper();
   currentAg = "Insertion Sort";
-  logInfo("<font color='red'>fuck you</font>");
+  memoryChange(4);
+  for (int i = 1; i < arraySize; i++) {
+    inevitableComparison();
+    int temp = array[i];
+    memoryChange(4);
+    int j = i - 1;
+    memoryChange(8);
+    for (; j >= 0 && array[j] > temp; j--) {
+      inevitableComparison();
+      compare(i, j);
+      sortTime += 32;
+      array[j + 1] = array[j];
+    }
+    sortTime += 32;
+    array[j + 1] = temp;
+    memoryChange(-12);
+  }
+  memoryChange(-4);
+  stackShallower();
 }
-
 // 选择排序
 void ArrayWidget::selectSort() {
+  stackDeeper();
   currentAg = "Select Sort";
-  logInfo("<font color='red'>fuck you</font>");
+  memoryChange(4);
+  for (int i = 0; i < arraySize - 1; i++) {
+    inevitableComparison();
+    memoryChange(4);
+    int minIndex = i;
+    for (int j = i + 1; j < arraySize; j++) {
+      inevitableComparison();
+      if (compare(j, minIndex) < 0) {
+        sortTime += 2.5;
+        minIndex = j;
+      }
+    }
+    swapData(i, minIndex);
+    memoryChange(-4);
+  }
+  memoryChange(-4);
+  stackShallower();
 }
 
 // 归并排序
 void ArrayWidget::mergeSort(int from, int to) {
+  stackDeeper();
   currentAg = "Merge Sort";
-  logInfo("<font color='red'>fuck you</font>");
+  if (to > from) {
+    inevitableComparison();
+    memoryChange(4);
+    int mid = (from + to) / 2;
+    sortTime += 2.5;
+
+    mergeSort(from, mid);
+    mergeSort(mid + 1, to);
+
+    memoryChange(4);
+    int ll = mid - from + 1;
+    sortTime += 2.5;
+    memoryChange(4);
+    int rl = to - mid;
+    sortTime += 2.5;
+
+    memoryChange(4 * ll);
+    int *leftArr = new int[ll];
+    memoryChange(4 * rl);
+    int *rightArr = new int[rl];
+
+    // 复制到临时数组
+    memoryChange(4);
+    for (int i = 0; i < ll; i++) {
+      inevitableComparison();
+      leftArr[i] = array[from + i];
+      sortTime += 32;
+    }
+    memoryChange(-4);
+    memoryChange(4);
+    for (int j = 0; j < rl; j++) {
+      inevitableComparison();
+      rightArr[j] = array[mid + 1 + j];
+      sortTime += 32;
+    }
+    memoryChange(-4);
+
+    memoryChange(12);
+    // 合并数组
+    int i = 0, j = 0, k = from;
+
+    inevitableComparison();
+    while (i < ll && j < rl) {
+      inevitableComparison();
+      compare(from, mid);
+      if (leftArr[i] < rightArr[j]) {
+        array[k] = leftArr[i];
+        i++;
+        sortTime += 34.5; // 数组赋值+1周期自增;
+      } else {
+        array[k] = rightArr[j];
+        j++;
+        sortTime += 34.5;
+      }
+      k++;
+      sortTime += 2.5;
+    }
+
+    inevitableComparison();
+    // 复制剩余数
+    while (i < ll) {
+      array[k] = leftArr[i];
+      k++;
+      i++;
+      sortTime += 37;
+    }
+    inevitableComparison();
+    while (j < rl) {
+      array[k] = rightArr[j];
+      k++;
+      j++;
+      sortTime += 37;
+    }
+
+    parentWidget()->repaint();
+
+    delete[] leftArr;
+    memoryChange(-1 * 4 * ll);
+    delete[] rightArr;
+    memoryChange(-1 * 4 * rl);
+
+    memoryChange(-24);
+  }
+  stackShallower();
 }
 
 // 桶排序
 void ArrayWidget::bucketSort() {
   currentAg = "Bucket Sort";
+
+  int bucketSize = 4;
+  int **bukets = new int *[arraySize / 4 + 1];
+  for (int i = 0; i < arraySize / bucketSize + 1; i++) {
+  }
+
   logInfo("<font color='red'>fuck you</font>");
 }
 
@@ -304,6 +429,7 @@ int ArrayWidget::compare(int i, int j) {
   checkPair.first = i;
   checkPair.second = j;
   delay();
+  parentWidget()->repaint();
   inevitableComparison();
   return array[i] > array[j] ? 1 : (array[i] == array[j] ? 0 : -1);
 }
