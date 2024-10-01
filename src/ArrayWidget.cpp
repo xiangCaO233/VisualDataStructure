@@ -1,5 +1,4 @@
 #include "../headers/ArrayWidget.h"
-#include <_stdlib.h>
 #include <unistd.h>
 
 // 构造数组组件
